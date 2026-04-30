@@ -6,8 +6,8 @@ from datetime import datetime, timedelta
 # Configuration
 # ----------------------------------------------------------------
 NUM_RECORDS = 5000
-START_DATE = datetime(2023, 1, 1)
-END_DATE = datetime(2024, 12, 31)
+START_DATE = datetime(2024, 1, 1)
+END_DATE = datetime(2026, 4, 30)
 MATCH_RATE = 0.80          # 80% of transactions will have a match
 DATE_DRIFT_DAYS = 2        # matched pairs can differ by up to 2 days
 AMOUNT_DRIFT_RATE = 0.05   # 5% of matches will have slight amount difference
