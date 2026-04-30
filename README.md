@@ -1,10 +1,15 @@
 # Finance Data Automation & Dashboard
+![Python](https://img.shields.io/badge/Python-3776AB?style=flat&logo=python&logoColor=white)
+![Django](https://img.shields.io/badge/django-%23092E20.svg?logo=django&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-Compose-blue)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15-blue)
+![AWS](https://img.shields.io/badge/AWS-EC2-orange)
 
 A production-grade Django system that ingests bank statements and internal
 ledger data, automatically reconciles transactions, categorizes expenses,
 and exposes insights via REST APIs and a live dashboard.
 
-Built as part of an internship assignment for **Pilgrim Skin Care**.
+This is built as part of an internship entrance assignment for **Pilgrim Skin Care**.
 
 ---
 
@@ -29,9 +34,6 @@ one from their internal books. They never match perfectly because descriptions
 differ, dates drift by a day or two, and some transactions only appear on one
 side. This system automatically reconciles them.
 
-
-![Alt text](Gemini_Generated_Image_14k8n514k8n514k8.png)
-
 ---
 
 ## Tech Stack
@@ -52,37 +54,46 @@ side. This system automatically reconciles them.
 
 ## Project Structure
 
-finance_automation/ \
-├── config/ \
-│   ├── settings.py              # Django settings, reads from .env \
-│   ├── celery.py                # Celery app configuration \
-│   ├── urls.py                  # Root URL routing \
-│   └── reconciliation_config.py # All tunable parameters in one place \
-├── ingestion/ \
-│   ├── models.py                # BankTransaction, LedgerEntry models \
-│   ├── services.py              # CSV parsing, column normalization, dedup \
-│   ├── categorizer.py           # Rule-based auto-categorization \
-│   ├── tasks.py                 # Celery pipeline task \
-│   ├── utils.py                 # SHA-256 hash for dedup \
-│   └── views.py                 # Upload API endpoints \
-├── reconciliation/ \
-│   ├── models.py                # ReconciliationResult model \
-│   └── services.py              # Fuzzy matching engine \
-├── ledger/ \
-│   ├── views.py                 # Summary, reconciliation, category APIs \
-│   └── templates/ledger/ \
-│       ├── dashboard.html       # Live dashboard with Chart.js \
-│       └── upload.html          # CSV upload page \
-├── scripts/ \
-│   └── generate_sample_data.py  # Generates realistic test data \
-├── sample_data/ \
-│   ├── bank_statement.csv       # 14-row sample \
-│   ├── internal_ledger.csv      # 14-row sample \
-│   ├── bank_statement_large.csv # 5000-row realistic sample \
-│   └── internal_ledger_large.csv \
-├── Dockerfile \
-├── docker-compose.yml \
-└── requirements.txt
+```
+finance_automation/
+├── config/
+│   ├── settings.py                  # Django settings, reads from .env
+│   ├── celery.py                    # Celery app configuration
+│   ├── urls.py                      # Root URL routing
+│   └── reconciliation_config.py    # All tunable parameters in one place
+│
+├── ingestion/
+│   ├── models.py                    # BankTransaction, LedgerEntry
+│   ├── services.py                  # CSV parsing, column normalization, dedup
+│   ├── categorizer.py               # Rule-based auto-categorization
+│   ├── tasks.py                     # Celery pipeline task
+│   ├── utils.py                     # SHA-256 hash for dedup
+│   └── views.py                     # Upload API endpoints
+│
+├── reconciliation/
+│   ├── models.py                    # ReconciliationResult model
+│   └── services.py                  # Fuzzy matching engine
+│
+├── ledger/
+│   ├── views.py                     # Summary, reconciliation, category APIs
+│   └── templates/ledger/
+│       ├── dashboard.html           # Live dashboard with Chart.js
+│       └── upload.html              # CSV upload page
+│
+├── scripts/
+│   └── generate_sample_data.py     # Generates 5000-row realistic test data
+│
+├── sample_data/
+│   ├── bank_statement.csv           # 14-row sample for quick testing
+│   ├── internal_ledger.csv          # 14-row sample
+│   ├── bank_statement_large.csv     # 5000-row realistic sample
+│   └── internal_ledger_large.csv    # 5000-row realistic sample
+│
+├── Dockerfile                       # Python 3.11 slim container
+├── docker-compose.yml               # 4 services: web, db, redis, celery
+├── requirements.txt                 # Python dependencies
+└── .env.example                     # Environment variable template
+```
 
 ---
 
