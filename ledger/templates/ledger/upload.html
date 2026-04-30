@@ -88,7 +88,6 @@
             margin-bottom: 32px;
         }
 
-        /* Upload cards */
         .upload-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -130,7 +129,6 @@
             line-height: 1.5;
         }
 
-        /* Column hints */
         .columns {
             background: #f9fafb;
             border-radius: 8px;
@@ -152,7 +150,6 @@
             color: #374151;
         }
 
-        /* Drop zone */
         .drop-zone {
             border: 2px dashed #d1d5db;
             border-radius: 10px;
@@ -184,9 +181,7 @@
             color: #6b7280;
         }
 
-        .drop-zone .dz-text strong {
-            color: #4f46e5;
-        }
+        .drop-zone .dz-text strong { color: #4f46e5; }
 
         .drop-zone .dz-filename {
             font-size: 13px;
@@ -195,7 +190,6 @@
             margin-top: 6px;
         }
 
-        /* Upload button */
         .upload-btn {
             width: 100%;
             padding: 12px;
@@ -208,18 +202,9 @@
             transition: all 0.2s;
         }
 
-        .btn-bank {
-            background: #4f46e5;
-            color: white;
-        }
-
+        .btn-bank { background: #4f46e5; color: white; }
         .btn-bank:hover { background: #4338ca; }
-
-        .btn-ledger {
-            background: #059669;
-            color: white;
-        }
-
+        .btn-ledger { background: #059669; color: white; }
         .btn-ledger:hover { background: #047857; }
 
         .upload-btn:disabled {
@@ -227,7 +212,6 @@
             cursor: not-allowed;
         }
 
-        /* Status messages */
         .status {
             margin-top: 14px;
             padding: 12px 14px;
@@ -236,25 +220,10 @@
             display: none;
         }
 
-        .status.loading {
-            display: block;
-            background: #eff6ff;
-            color: #1d4ed8;
-        }
+        .status.loading { display: block; background: #eff6ff; color: #1d4ed8; }
+        .status.success { display: block; background: #d1fae5; color: #065f46; }
+        .status.error   { display: block; background: #fee2e2; color: #991b1b; }
 
-        .status.success {
-            display: block;
-            background: #d1fae5;
-            color: #065f46;
-        }
-
-        .status.error {
-            display: block;
-            background: #fee2e2;
-            color: #991b1b;
-        }
-
-        /* Pipeline status card */
         .pipeline-card {
             background: white;
             border-radius: 12px;
@@ -270,11 +239,7 @@
             color: #374151;
         }
 
-        .pipeline-steps {
-            display: flex;
-            align-items: center;
-            gap: 0;
-        }
+        .pipeline-steps { display: flex; align-items: center; gap: 0; }
 
         .step {
             display: flex;
@@ -298,27 +263,12 @@
             transition: all 0.3s;
         }
 
-        .step-circle.active {
-            background: #ede9fe;
-            color: #4f46e5;
-            border-color: #4f46e5;
-        }
+        .step-circle.active { background: #ede9fe; color: #4f46e5; border-color: #4f46e5; }
+        .step-circle.done   { background: #d1fae5; color: #059669; border-color: #059669; }
 
-        .step-circle.done {
-            background: #d1fae5;
-            color: #059669;
-            border-color: #059669;
-        }
-
-        .step-label {
-            font-size: 11px;
-            color: #9ca3af;
-            margin-top: 6px;
-            text-align: center;
-        }
-
+        .step-label { font-size: 11px; color: #9ca3af; margin-top: 6px; text-align: center; }
         .step-label.active { color: #4f46e5; font-weight: 500; }
-        .step-label.done { color: #059669; }
+        .step-label.done   { color: #059669; }
 
         .step-connector {
             flex: 1;
@@ -329,19 +279,6 @@
         }
 
         .step-connector.done { background: #059669; }
-
-        /* Info box */
-        .info-box {
-            background: #eff6ff;
-            border: 1px solid #bfdbfe;
-            border-radius: 10px;
-            padding: 16px 20px;
-            font-size: 13px;
-            color: #1e40af;
-            line-height: 1.6;
-        }
-
-        .info-box strong { display: block; margin-bottom: 4px; }
 
         .spinner {
             display: inline-block;
@@ -378,6 +315,7 @@
 
 <div class="header">
     <div class="header-left">
+        {% comment %} <div class="header-logo">💰</div> {% endcomment %}
         <div class="header-title">
             <h1>Finance Automation</h1>
             <p>Data ingestion pipeline</p>
@@ -385,7 +323,6 @@
     </div>
     <a href="/dashboard/" class="nav-btn">View Dashboard →</a>
 </div>
-
 
 <div class="container">
 
@@ -395,7 +332,6 @@
         categorize transactions and run reconciliation in the background.
     </div>
 
-    <!-- Pipeline status -->
     <div class="pipeline-card">
         <h3>Pipeline Status</h3>
         <div class="pipeline-steps">
@@ -426,10 +362,8 @@
         </div>
     </div>
 
-    <!-- Upload cards -->
     <div class="upload-grid">
 
-        <!-- Bank Statement -->
         <div class="upload-card">
             {% comment %} <div class="icon icon-bank">🏦</div> {% endcomment %}
             <h2>Bank Statement</h2>
@@ -453,7 +387,6 @@
             <div class="status" id="bank-status"></div>
         </div>
 
-        <!-- Internal Ledger -->
         <div class="upload-card">
             {% comment %} <div class="icon icon-ledger">📒</div> {% endcomment %}
             <h2>Internal Ledger</h2>
@@ -490,26 +423,16 @@
         const input = document.getElementById(`${type}-file`);
         const file = input.files[0];
         if (!file) return;
-
         selectedFiles[type] = file;
         document.getElementById(`${type}-filename`).textContent = file.name;
         document.getElementById(`${type}-btn`).disabled = false;
         resetStatus(type);
     }
 
-    // Drag and drop
     ['bank', 'ledger'].forEach(type => {
         const zone = document.getElementById(`${type}-drop`);
-
-        zone.addEventListener('dragover', e => {
-            e.preventDefault();
-            zone.classList.add('dragover');
-        });
-
-        zone.addEventListener('dragleave', () => {
-            zone.classList.remove('dragover');
-        });
-
+        zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('dragover'); });
+        zone.addEventListener('dragleave', () => { zone.classList.remove('dragover'); });
         zone.addEventListener('drop', e => {
             e.preventDefault();
             zone.classList.remove('dragover');
@@ -520,7 +443,7 @@
                 document.getElementById(`${type}-btn`).disabled = false;
                 resetStatus(type);
             } else {
-                showStatus(type, 'error', 'Please drop a CSV file.');
+                showStatus(type, 'error', '❌ Please drop a CSV file.');
             }
         });
     });
@@ -538,11 +461,8 @@
     }
 
     function setStep(stepNum, state) {
-        // state: 'active' | 'done' | ''
-        const circle = document.getElementById(`step-${stepNum}`);
-        const label = document.getElementById(`step-${stepNum}-label`);
-        circle.className = `step-circle ${state}`;
-        label.className = `step-label ${state}`;
+        document.getElementById(`step-${stepNum}`).className = `step-circle ${state}`;
+        document.getElementById(`step-${stepNum}-label`).className = `step-label ${state}`;
         if (stepNum > 1) {
             const conn = document.getElementById(`conn-${stepNum - 1}`);
             if (conn) conn.className = `step-connector ${state === 'done' ? 'done' : ''}`;
@@ -550,9 +470,7 @@
     }
 
     function resetPipeline() {
-        for (let i = 1; i <= 5; i++) {
-            setStep(i, '');
-        }
+        for (let i = 1; i <= 5; i++) setStep(i, '');
         for (let i = 1; i <= 4; i++) {
             const conn = document.getElementById(`conn-${i}`);
             if (conn) conn.className = 'step-connector';
@@ -566,73 +484,55 @@
         const btn = document.getElementById(`${type}-btn`);
         btn.disabled = true;
 
-        const endpoint = type === 'bank'
-            ? '/api/upload/bank/'
-            : '/api/upload/ledger/';
+        const endpoint = type === 'bank' ? '/api/upload/bank/' : '/api/upload/ledger/';
 
-        // Step 1 active — uploading
         resetPipeline();
         setStep(1, 'active');
-        showStatus(type, 'loading',
-            '<span class="spinner"></span> Uploading file...'
-        );
+        showStatus(type, 'loading', '<span class="spinner"></span> Uploading file...');
 
         const formData = new FormData();
         formData.append('file', file);
 
         try {
-            // Step 1 → 2: upload + ingest
             setStep(1, 'done');
             setStep(2, 'active');
-            showStatus(type, 'loading',
-                '<span class="spinner"></span> Ingesting rows...'
-            );
+            showStatus(type, 'loading', '<span class="spinner"></span> Ingesting rows...');
 
-            const response = await fetch(endpoint, {
-                method: 'POST',
-                body: formData,
-            });
-
+            const response = await fetch(endpoint, { method: 'POST', body: formData });
             const data = await response.json();
 
-            if (!response.ok || data.error) {
-                showStatus(type, 'error',
-                    `❌ ${data.error || 'Upload failed. Check your file format.'}`
-                );
+            // Check for errors at any level
+            const errorMsg = data.error || (data.ingestion && data.ingestion.error);
+            if (!response.ok || errorMsg) {
+                showStatus(type, 'error', `❌ ${errorMsg || 'Upload failed. Please check your file format and required columns.'}`);
                 btn.disabled = false;
                 resetPipeline();
                 return;
             }
 
-            // Step 2 done
             setStep(2, 'done');
-
-            // Step 3: categorizing (background, simulate progress)
             setStep(3, 'active');
-            showStatus(type, 'loading',
-                '<span class="spinner"></span> Categorizing transactions...'
-            );
+            showStatus(type, 'loading', '<span class="spinner"></span> Categorizing transactions...');
             await sleep(1200);
 
-            // Step 4: reconciling
             setStep(3, 'done');
             setStep(4, 'active');
-            showStatus(type, 'loading',
-                '<span class="spinner"></span> Running reconciliation...'
-            );
+            showStatus(type, 'loading', '<span class="spinner"></span> Running reconciliation...');
             await sleep(1500);
 
-            // Step 5: done
             setStep(4, 'done');
             setStep(5, 'done');
 
-            // Build result message
-            const { created, skipped, total_rows, errors } = data.ingestion;
+            // ── Fix: safely extract ingestion fields ──
+            const ingestion = data.ingestion || {};
+            const created = ingestion.created ?? '?';
+            const skipped = ingestion.skipped ?? 0;
+            const errors  = ingestion.errors  || [];
+
             let msg = `✅ Done! ${created} new rows saved`;
             if (skipped > 0) msg += `, ${skipped} duplicates skipped`;
-            if (errors && errors.length > 0) {
-                msg += `<br>⚠️ ${errors.length} rows had errors: `;
-                msg += errors.map(e => `Row ${e.row}: ${e.error}`).join(', ');
+            if (errors.length > 0) {
+                msg += `<br>⚠️ ${errors.length} row(s) had issues — check your data`;
             }
 
             showStatus(type, 'success', msg);
@@ -645,9 +545,7 @@
         }
     }
 
-    function sleep(ms) {
-        return new Promise(resolve => setTimeout(resolve, ms));
-    }
+    function sleep(ms) { return new Promise(resolve => setTimeout(resolve, ms)); }
 </script>
 </body>
 </html>
