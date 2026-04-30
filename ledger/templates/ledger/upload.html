@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Files — Finance Automation</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #f0f2f5;
+            color: #1a1a2e;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 60%, #0f3460 100%);
+            color: white;
+            padding: 0 32px;
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.3);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .header-logo {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .header-title h1 {
+            font-size: 16px;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+        }
+
+        .header-title p {
+            font-size: 11px;
+            opacity: 0.5;
+            margin-top: 1px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .nav-btn {
+            background: transparent;
+            color: white;
+            border: 1px solid rgba(255,255,255,0.3);
+            padding: 8px 18px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .nav-btn:hover { background: rgba(255,255,255,0.1); }
+
+        .container {
+            max-width: 860px;
+            margin: 40px auto;
+            padding: 0 24px;
+        }
+
+        .page-title {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .page-subtitle {
+            font-size: 14px;
+            color: #6b7280;
+            margin-bottom: 32px;
+        }
+
+        /* Upload cards */
+        .upload-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 32px;
+        }
+
+        .upload-card {
+            background: white;
+            border-radius: 12px;
+            padding: 28px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+        }
+
+        .upload-card .icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            margin-bottom: 16px;
+        }
+
+        .icon-bank { background: #ede9fe; }
+        .icon-ledger { background: #d1fae5; }
+
+        .upload-card h2 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        .upload-card p {
+            font-size: 13px;
+            color: #6b7280;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        /* Column hints */
+        .columns {
+            background: #f9fafb;
+            border-radius: 8px;
+            padding: 10px 14px;
+            margin-bottom: 20px;
+            font-size: 12px;
+            color: #6b7280;
+        }
+
+        .columns span {
+            display: inline-block;
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 4px;
+            padding: 2px 8px;
+            margin: 2px 2px;
+            font-family: monospace;
+            font-size: 11px;
+            color: #374151;
+        }
+
+        /* Drop zone */
+        .drop-zone {
+            border: 2px dashed #d1d5db;
+            border-radius: 10px;
+            padding: 28px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+        }
+
+        .drop-zone:hover, .drop-zone.dragover {
+            border-color: #4f46e5;
+            background: #f5f3ff;
+        }
+
+        .drop-zone input[type="file"] {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            cursor: pointer;
+            width: 100%;
+            height: 100%;
+        }
+
+        .drop-zone .dz-icon { font-size: 28px; margin-bottom: 8px; }
+
+        .drop-zone .dz-text {
+            font-size: 13px;
+            color: #6b7280;
+        }
+
+        .drop-zone .dz-text strong {
+            color: #4f46e5;
+        }
+
+        .drop-zone .dz-filename {
+            font-size: 13px;
+            font-weight: 600;
+            color: #1a1a2e;
+            margin-top: 6px;
+        }
+
+        /* Upload button */
+        .upload-btn {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            margin-top: 16px;
+            transition: all 0.2s;
+        }
+
+        .btn-bank {
+            background: #4f46e5;
+            color: white;
+        }
+
+        .btn-bank:hover { background: #4338ca; }
+
+        .btn-ledger {
+            background: #059669;
+            color: white;
+        }
+
+        .btn-ledger:hover { background: #047857; }
+
+        .upload-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Status messages */
+        .status {
+            margin-top: 14px;
+            padding: 12px 14px;
+            border-radius: 8px;
+            font-size: 13px;
+            display: none;
+        }
+
+        .status.loading {
+            display: block;
+            background: #eff6ff;
+            color: #1d4ed8;
+        }
+
+        .status.success {
+            display: block;
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .status.error {
+            display: block;
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        /* Pipeline status card */
+        .pipeline-card {
+            background: white;
+            border-radius: 12px;
+            padding: 24px 28px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            margin-bottom: 20px;
+        }
+
+        .pipeline-card h3 {
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: #374151;
+        }
+
+        .pipeline-steps {
+            display: flex;
+            align-items: center;
+            gap: 0;
+        }
+
+        .step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex: 1;
+        }
+
+        .step-circle {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 600;
+            background: #f3f4f6;
+            color: #9ca3af;
+            border: 2px solid #e5e7eb;
+            transition: all 0.3s;
+        }
+
+        .step-circle.active {
+            background: #ede9fe;
+            color: #4f46e5;
+            border-color: #4f46e5;
+        }
+
+        .step-circle.done {
+            background: #d1fae5;
+            color: #059669;
+            border-color: #059669;
+        }
+
+        .step-label {
+            font-size: 11px;
+            color: #9ca3af;
+            margin-top: 6px;
+            text-align: center;
+        }
+
+        .step-label.active { color: #4f46e5; font-weight: 500; }
+        .step-label.done { color: #059669; }
+
+        .step-connector {
+            flex: 1;
+            height: 2px;
+            background: #e5e7eb;
+            margin-bottom: 20px;
+            transition: background 0.3s;
+        }
+
+        .step-connector.done { background: #059669; }
+
+        /* Info box */
+        .info-box {
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            border-radius: 10px;
+            padding: 16px 20px;
+            font-size: 13px;
+            color: #1e40af;
+            line-height: 1.6;
+        }
+
+        .info-box strong { display: block; margin-bottom: 4px; }
+
+        .spinner {
+            display: inline-block;
+            width: 14px;
+            height: 14px;
+            border: 2px solid currentColor;
+            border-top-color: transparent;
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+            vertical-align: middle;
+            margin-right: 6px;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .view-dashboard-btn {
+            display: block;
+            text-align: center;
+            background: #1a1a2e;
+            color: white;
+            padding: 14px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            margin-top: 8px;
+            transition: background 0.2s;
+        }
+
+        .view-dashboard-btn:hover { background: #2d2d4e; }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <div class="header-left">
+        <div class="header-title">
+            <h1>Finance Automation</h1>
+            <p>Data ingestion pipeline</p>
+        </div>
+    </div>
+    <a href="/dashboard/" class="nav-btn">View Dashboard →</a>
+</div>
+
+
+<div class="container">
+
+    <div class="page-title">Upload CSV Files</div>
+    <div class="page-subtitle">
+        Upload your bank statement and internal ledger. The system will automatically
+        categorize transactions and run reconciliation in the background.
+    </div>
+
+    <!-- Pipeline status -->
+    <div class="pipeline-card">
+        <h3>Pipeline Status</h3>
+        <div class="pipeline-steps">
+            <div class="step">
+                <div class="step-circle" id="step-1">1</div>
+                <div class="step-label" id="step-1-label">Upload</div>
+            </div>
+            <div class="step-connector" id="conn-1"></div>
+            <div class="step">
+                <div class="step-circle" id="step-2">2</div>
+                <div class="step-label" id="step-2-label">Ingest</div>
+            </div>
+            <div class="step-connector" id="conn-2"></div>
+            <div class="step">
+                <div class="step-circle" id="step-3">3</div>
+                <div class="step-label" id="step-3-label">Categorize</div>
+            </div>
+            <div class="step-connector" id="conn-3"></div>
+            <div class="step">
+                <div class="step-circle" id="step-4">4</div>
+                <div class="step-label" id="step-4-label">Reconcile</div>
+            </div>
+            <div class="step-connector" id="conn-4"></div>
+            <div class="step">
+                <div class="step-circle" id="step-5">✓</div>
+                <div class="step-label" id="step-5-label">Done</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Upload cards -->
+    <div class="upload-grid">
+
+        <!-- Bank Statement -->
+        <div class="upload-card">
+            {% comment %} <div class="icon icon-bank">🏦</div> {% endcomment %}
+            <h2>Bank Statement</h2>
+            <p>Download your bank statement as CSV and upload it here.</p>
+            <div class="columns">
+                Required columns:
+                <span>date</span>
+                <span>narration</span>
+                <span>amount</span>
+                <span>type</span>
+            </div>
+            <div class="drop-zone" id="bank-drop">
+                <input type="file" accept=".csv" id="bank-file" onchange="handleFileSelect('bank')">
+                {% comment %} <div class="dz-icon">📄</div> {% endcomment %}
+                <div class="dz-text"><strong>Click to browse</strong> or drag & drop</div>
+                <div class="dz-filename" id="bank-filename"></div>
+            </div>
+            <button class="upload-btn btn-bank" id="bank-btn" onclick="uploadFile('bank')" disabled>
+                Upload Bank Statement
+            </button>
+            <div class="status" id="bank-status"></div>
+        </div>
+
+        <!-- Internal Ledger -->
+        <div class="upload-card">
+            {% comment %} <div class="icon icon-ledger">📒</div> {% endcomment %}
+            <h2>Internal Ledger</h2>
+            <p>Upload your internal bookkeeping records as CSV.</p>
+            <div class="columns">
+                Required columns:
+                <span>date</span>
+                <span>description</span>
+                <span>amount</span>
+                <span>category</span>
+            </div>
+            <div class="drop-zone" id="ledger-drop">
+                <input type="file" accept=".csv" id="ledger-file" onchange="handleFileSelect('ledger')">
+                {% comment %} <div class="dz-icon">📄</div> {% endcomment %}
+                <div class="dz-text"><strong>Click to browse</strong> or drag & drop</div>
+                <div class="dz-filename" id="ledger-filename"></div>
+            </div>
+            <button class="upload-btn btn-ledger" id="ledger-btn" onclick="uploadFile('ledger')" disabled>
+                Upload Internal Ledger
+            </button>
+            <div class="status" id="ledger-status"></div>
+        </div>
+
+    </div>
+
+    <a href="/dashboard/" class="view-dashboard-btn">View Dashboard →</a>
+
+</div>
+
+<script>
+    const selectedFiles = { bank: null, ledger: null };
+
+    function handleFileSelect(type) {
+        const input = document.getElementById(`${type}-file`);
+        const file = input.files[0];
+        if (!file) return;
+
+        selectedFiles[type] = file;
+        document.getElementById(`${type}-filename`).textContent = file.name;
+        document.getElementById(`${type}-btn`).disabled = false;
+        resetStatus(type);
+    }
+
+    // Drag and drop
+    ['bank', 'ledger'].forEach(type => {
+        const zone = document.getElementById(`${type}-drop`);
+
+        zone.addEventListener('dragover', e => {
+            e.preventDefault();
+            zone.classList.add('dragover');
+        });
+
+        zone.addEventListener('dragleave', () => {
+            zone.classList.remove('dragover');
+        });
+
+        zone.addEventListener('drop', e => {
+            e.preventDefault();
+            zone.classList.remove('dragover');
+            const file = e.dataTransfer.files[0];
+            if (file && file.name.endsWith('.csv')) {
+                selectedFiles[type] = file;
+                document.getElementById(`${type}-filename`).textContent = file.name;
+                document.getElementById(`${type}-btn`).disabled = false;
+                resetStatus(type);
+            } else {
+                showStatus(type, 'error', 'Please drop a CSV file.');
+            }
+        });
+    });
+
+    function resetStatus(type) {
+        const el = document.getElementById(`${type}-status`);
+        el.className = 'status';
+        el.textContent = '';
+    }
+
+    function showStatus(type, level, message) {
+        const el = document.getElementById(`${type}-status`);
+        el.className = `status ${level}`;
+        el.innerHTML = message;
+    }
+
+    function setStep(stepNum, state) {
+        // state: 'active' | 'done' | ''
+        const circle = document.getElementById(`step-${stepNum}`);
+        const label = document.getElementById(`step-${stepNum}-label`);
+        circle.className = `step-circle ${state}`;
+        label.className = `step-label ${state}`;
+        if (stepNum > 1) {
+            const conn = document.getElementById(`conn-${stepNum - 1}`);
+            if (conn) conn.className = `step-connector ${state === 'done' ? 'done' : ''}`;
+        }
+    }
+
+    function resetPipeline() {
+        for (let i = 1; i <= 5; i++) {
+            setStep(i, '');
+        }
+        for (let i = 1; i <= 4; i++) {
+            const conn = document.getElementById(`conn-${i}`);
+            if (conn) conn.className = 'step-connector';
+        }
+    }
+
+    async function uploadFile(type) {
+        const file = selectedFiles[type];
+        if (!file) return;
+
+        const btn = document.getElementById(`${type}-btn`);
+        btn.disabled = true;
+
+        const endpoint = type === 'bank'
+            ? '/api/upload/bank/'
+            : '/api/upload/ledger/';
+
+        // Step 1 active — uploading
+        resetPipeline();
+        setStep(1, 'active');
+        showStatus(type, 'loading',
+            '<span class="spinner"></span> Uploading file...'
+        );
+
+        const formData = new FormData();
+        formData.append('file', file);
+
+        try {
+            // Step 1 → 2: upload + ingest
+            setStep(1, 'done');
+            setStep(2, 'active');
+            showStatus(type, 'loading',
+                '<span class="spinner"></span> Ingesting rows...'
+            );
+
+            const response = await fetch(endpoint, {
+                method: 'POST',
+                body: formData,
+            });
+
+            const data = await response.json();
+
+            if (!response.ok || data.error) {
+                showStatus(type, 'error',
+                    `❌ ${data.error || 'Upload failed. Check your file format.'}`
+                );
+                btn.disabled = false;
+                resetPipeline();
+                return;
+            }
+
+            // Step 2 done
+            setStep(2, 'done');
+
+            // Step 3: categorizing (background, simulate progress)
+            setStep(3, 'active');
+            showStatus(type, 'loading',
+                '<span class="spinner"></span> Categorizing transactions...'
+            );
+            await sleep(1200);
+
+            // Step 4: reconciling
+            setStep(3, 'done');
+            setStep(4, 'active');
+            showStatus(type, 'loading',
+                '<span class="spinner"></span> Running reconciliation...'
+            );
+            await sleep(1500);
+
+            // Step 5: done
+            setStep(4, 'done');
+            setStep(5, 'done');
+
+            // Build result message
+            const { created, skipped, total_rows, errors } = data.ingestion;
+            let msg = `✅ Done! ${created} new rows saved`;
+            if (skipped > 0) msg += `, ${skipped} duplicates skipped`;
+            if (errors && errors.length > 0) {
+                msg += `<br>⚠️ ${errors.length} rows had errors: `;
+                msg += errors.map(e => `Row ${e.row}: ${e.error}`).join(', ');
+            }
+
+            showStatus(type, 'success', msg);
+            btn.disabled = false;
+
+        } catch (err) {
+            showStatus(type, 'error', `❌ Network error: ${err.message}`);
+            btn.disabled = false;
+            resetPipeline();
+        }
+    }
+
+    function sleep(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+</script>
+</body>
+</html>

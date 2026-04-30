@@ -1,0 +1,15 @@
+date,narration,amount,type
+2024-01-01,Swiggy order #4521,450.50,debit
+2024-01-02,Salary credit Jan,85000.00,credit
+2024-01-03,Uber ride MG Road,320.00,debit
+2024-01-04,Amazon purchase,1200.00,debit
+2024-01-05,AWS invoice Jan,5400.00,debit
+2024-01-06,Zepto groceries,890.00,debit
+2024-01-07,Netflix subscription,649.00,debit
+2024-01-08,Swiggy order #4789,380.00,debit
+2024-01-09,Client payment Project A,45000.00,credit
+2024-01-10,Uber ride Andheri,210.00,debit
+2024-01-11,Electricity bill Jan,2300.00,debit
+2024-01-12,Zomato order,520.00,debit
+2024-01-13,Google Workspace,720.00,debit
+2024-01-15,Client payment Project B,30000.00,credit

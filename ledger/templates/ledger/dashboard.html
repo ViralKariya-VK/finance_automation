@@ -1,0 +1,981 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finance Dashboard — Pilgrim</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #f0f2f5;
+            color: #1a1a2e;
+        }
+
+        /* ── Header ── */
+        .header {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 60%, #0f3460 100%);
+            color: white;
+            padding: 0 32px;
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.3);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .header-logo {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .header-title {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header-title h1 {
+            font-size: 16px;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+        }
+
+        .header-title p {
+            font-size: 11px;
+            opacity: 0.5;
+            margin-top: 1px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .header-badge {
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.12);
+            color: rgba(255,255,255,0.7);
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            letter-spacing: 0.3px;
+        }
+
+        .header-btn {
+            background: #4f46e5;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 500;
+            letter-spacing: 0.3px;
+            transition: background 0.2s;
+        }
+
+        .header-btn:hover { background: #4338ca; }
+
+        .header-btn.secondary {
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.15);
+        }
+
+        .header-btn.secondary:hover { background: rgba(255,255,255,0.15); }
+
+        /* ── Page ── */
+        .container { padding: 24px 32px; }
+
+        .page-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .page-header-left h2 {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1a1a2e;
+        }
+
+        .page-header-left p {
+            font-size: 13px;
+            color: #6b7280;
+            margin-top: 3px;
+        }
+
+        .last-updated {
+            font-size: 12px;
+            color: #9ca3af;
+            background: white;
+            padding: 6px 12px;
+            border-radius: 6px;
+            border: 1px solid #e5e7eb;
+        }
+
+        /* ── Cards ── */
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+            border: 1px solid #f3f4f6;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+        }
+
+        .card.green::before { background: linear-gradient(90deg, #059669, #34d399); }
+        .card.red::before { background: linear-gradient(90deg, #dc2626, #f87171); }
+        .card.blue::before { background: linear-gradient(90deg, #4f46e5, #818cf8); }
+        .card.amber::before { background: linear-gradient(90deg, #d97706, #fbbf24); }
+
+        .card .label {
+            font-size: 11px;
+            color: #9ca3af;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            font-weight: 500;
+            margin-bottom: 10px;
+        }
+
+        .card .value {
+            font-size: 28px;
+            font-weight: 700;
+            color: #1a1a2e;
+            line-height: 1;
+        }
+
+        .card .value.green { color: #059669; }
+        .card .value.red { color: #dc2626; }
+        .card .value.blue { color: #4f46e5; }
+        .card .value.amber { color: #d97706; }
+
+        .card .sub {
+            font-size: 12px;
+            color: #9ca3af;
+            margin-top: 6px;
+        }
+
+        /* ── Reconciliation bar ── */
+        .recon-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px 24px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+            border: 1px solid #f3f4f6;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 32px;
+        }
+
+        .recon-stats {
+            display: flex;
+            gap: 28px;
+            flex-shrink: 0;
+        }
+
+        .recon-stat .num {
+            font-size: 24px;
+            font-weight: 700;
+            line-height: 1;
+        }
+
+        .recon-stat .num.matched { color: #059669; }
+        .recon-stat .num.unmatched { color: #dc2626; }
+        .recon-stat .num.total { color: #4f46e5; }
+
+        .recon-stat .lbl {
+            font-size: 11px;
+            color: #9ca3af;
+            margin-top: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .recon-bar-wrap { flex: 1; }
+
+        .recon-bar-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: #6b7280;
+            margin-bottom: 6px;
+        }
+
+        .progress-bar {
+            background: #f3f4f6;
+            border-radius: 99px;
+            height: 10px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            border-radius: 99px;
+            background: linear-gradient(90deg, #059669, #34d399);
+            transition: width 1s ease;
+        }
+
+        /* ── Charts ── */
+        .charts {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .chart-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px 24px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+            border: 1px solid #f3f4f6;
+        }
+
+        .chart-card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+
+        .chart-card-header h3 {
+            font-size: 14px;
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .chart-card-header span {
+            font-size: 11px;
+            color: #9ca3af;
+        }
+
+        .chart-wrapper {
+            position: relative;
+            height: 260px;
+        }
+
+        /* ── Table section ── */
+        .table-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+            border: 1px solid #f3f4f6;
+            overflow: hidden;
+        }
+
+        .table-header {
+            padding: 16px 24px;
+            border-bottom: 1px solid #f3f4f6;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .table-header-left h3 {
+            font-size: 14px;
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .table-header-left p {
+            font-size: 12px;
+            color: #9ca3af;
+            margin-top: 2px;
+        }
+
+        /* ── Filters ── */
+        .filters {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            padding: 12px 24px;
+            background: #fafafa;
+            border-bottom: 1px solid #f3f4f6;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+
+        .filter-group label {
+            font-size: 10px;
+            color: #9ca3af;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 500;
+        }
+
+        .filter-group input,
+        .filter-group select {
+            padding: 6px 10px;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            font-size: 12px;
+            color: #374151;
+            background: white;
+            outline: none;
+            min-width: 120px;
+            transition: border-color 0.2s;
+        }
+
+        .filter-group input:focus,
+        .filter-group select:focus {
+            border-color: #4f46e5;
+        }
+
+        .filter-clear {
+            align-self: flex-end;
+            padding: 6px 14px;
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            font-size: 12px;
+            color: #6b7280;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .filter-clear:hover {
+            border-color: #dc2626;
+            color: #dc2626;
+        }
+
+        /* ── Table ── */
+        .table-wrap { overflow-x: auto; }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        th {
+            text-align: left;
+            padding: 10px 16px;
+            background: #f9fafb;
+            color: #6b7280;
+            font-weight: 500;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid #e5e7eb;
+            white-space: nowrap;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        th:hover { background: #f3f4f6; color: #374151; }
+
+        th .sort-icon { margin-left: 4px; opacity: 0.4; }
+        th.sorted .sort-icon { opacity: 1; color: #4f46e5; }
+
+        td {
+            padding: 12px 16px;
+            border-bottom: 1px solid #f9fafb;
+            color: #374151;
+            vertical-align: middle;
+        }
+
+        tr:last-child td { border-bottom: none; }
+        tr:hover td { background: #fafafa; }
+
+        .badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 99px;
+            font-size: 11px;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        .badge.matched { background: #d1fae5; color: #065f46; }
+        .badge.unmatched_bank { background: #fee2e2; color: #991b1b; }
+        .badge.unmatched_ledger { background: #fef3c7; color: #92400e; }
+        .badge.matched_with_discrepancy { background: #dbeafe; color: #1e40af; }
+
+        .score-bar {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .score-fill {
+            height: 4px;
+            border-radius: 2px;
+            background: #4f46e5;
+            min-width: 2px;
+        }
+
+        .score-text { font-size: 11px; color: #9ca3af; }
+
+        .table-footer {
+            padding: 12px 24px;
+            border-top: 1px solid #f3f4f6;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 12px;
+            color: #9ca3af;
+        }
+
+        .empty {
+            text-align: center;
+            padding: 40px;
+            color: #9ca3af;
+            font-size: 14px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #9ca3af;
+            font-size: 13px;
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 14px;
+            height: 14px;
+            border: 2px solid currentColor;
+            border-top-color: transparent;
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+            vertical-align: middle;
+            margin-right: 6px;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="header">
+    <div class="header-left">
+        {% comment %} <div class="header-logo">💰</div> {% endcomment %}
+        <div class="header-title">
+            <h1>Finance Automation</h1>
+            <p>Reconciliation Dashboard</p>
+        </div>
+    </div>
+    <div class="header-right">
+        <span class="header-badge" id="last-refresh">Loading...</span>
+        <a href="/upload/" style="text-decoration:none">
+            <button class="header-btn secondary">Upload CSV</button>
+        </a>
+        <button class="header-btn" onclick="loadAll()">Refresh Data</button>
+    </div>
+</div>
+
+<div class="container">
+    <!-- Summary cards -->
+    <div class="cards">
+        <div class="card green">
+            <div class="label">Total Credits</div>
+            <div class="value green" id="total-credits">—</div>
+            <div class="sub">Money received</div>
+        </div>
+        <div class="card red">
+            <div class="label">Total Debits</div>
+            <div class="value red" id="total-debits">—</div>
+            <div class="sub">Money spent</div>
+        </div>
+        <div class="card blue">
+            <div class="label">Net Cashflow</div>
+            <div class="value blue" id="net-cashflow">—</div>
+            <div class="sub">Credits minus debits</div>
+        </div>
+        <div class="card amber">
+            <div class="label">Unmatched Amount</div>
+            <div class="value amber" id="unmatched-amount">—</div>
+            <div class="sub">Needs investigation</div>
+        </div>
+    </div>
+
+    <!-- Reconciliation progress -->
+    <div class="recon-card">
+        <div class="recon-stats">
+            <div class="recon-stat">
+                <div class="num total" id="recon-total">—</div>
+                <div class="lbl">Total</div>
+            </div>
+            <div class="recon-stat">
+                <div class="num matched" id="recon-matched">—</div>
+                <div class="lbl">Matched</div>
+            </div>
+            <div class="recon-stat">
+                <div class="num unmatched" id="recon-unmatched-bank">—</div>
+                <div class="lbl">Unmatched Bank</div>
+            </div>
+            <div class="recon-stat">
+                <div class="num unmatched" id="recon-unmatched-ledger">—</div>
+                <div class="lbl">Unmatched Ledger</div>
+            </div>
+        </div>
+        <div class="recon-bar-wrap">
+            <div class="recon-bar-label">
+                <span>Reconciliation progress</span>
+                <span id="recon-percent">0%</span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="recon-progress" style="width:0%"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts -->
+    <div class="charts">
+        <div class="chart-card">
+            <div class="chart-card-header">
+                <h3>Expenses by Category</h3>
+                <span>Bank debits</span>
+            </div>
+            <div class="chart-wrapper">
+                <canvas id="categoryChart"></canvas>
+            </div>
+        </div>
+        <div class="chart-card">
+            <div class="chart-card-header">
+                <h3>Daily Cashflow</h3>
+                <span>Credits vs debits</span>
+            </div>
+            <div class="chart-wrapper">
+                <canvas id="cashflowChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reconciliation table -->
+    <div class="table-card">
+        <div class="table-header">
+            <div class="table-header-left">
+                <h3>Reconciliation Results</h3>
+                <p id="table-count">Showing most recent 20 records — use filters to search all</p>
+            </div>
+        </div>
+
+        <!-- Filters -->
+        <div class="filters">
+            <div class="filter-group">
+                <label>Date from</label>
+                <input type="date" id="filter-date-from" oninput="applyFilters()">
+            </div>
+            <div class="filter-group">
+                <label>Date to</label>
+                <input type="date" id="filter-date-to" oninput="applyFilters()">
+            </div>
+            <div class="filter-group">
+                <label>Bank narration</label>
+                <input type="text" id="filter-narration" placeholder="Search..." oninput="applyFilters()">
+            </div>
+            <div class="filter-group">
+                <label>Ledger description</label>
+                <input type="text" id="filter-description" placeholder="Search..." oninput="applyFilters()">
+            </div>
+            <div class="filter-group">
+                <label>Category</label>
+                <select id="filter-category" onchange="applyFilters()">
+                    <option value="">All categories</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>Status</label>
+                <select id="filter-status" onchange="applyFilters()">
+                    <option value="">All statuses</option>
+                    <option value="matched">Matched</option>
+                    <option value="matched_with_discrepancy">Matched (discrepancy)</option>
+                    <option value="unmatched_bank">Unmatched bank</option>
+                    <option value="unmatched_ledger">Unmatched ledger</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>Min amount</label>
+                <input type="number" id="filter-amount-min" placeholder="0" oninput="applyFilters()">
+            </div>
+            <div class="filter-group">
+                <label>Max amount</label>
+                <input type="number" id="filter-amount-max" placeholder="Any" oninput="applyFilters()">
+            </div>
+            <button class="filter-clear" onclick="clearFilters()">Clear filters</button>
+        </div>
+
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th onclick="sortTable('date')">Date <span class="sort-icon">↕</span></th>
+                        <th onclick="sortTable('narration')">Bank Narration <span class="sort-icon">↕</span></th>
+                        <th onclick="sortTable('description')">Ledger Description <span class="sort-icon">↕</span></th>
+                        <th onclick="sortTable('amount')">Amount <span class="sort-icon">↕</span></th>
+                        <th onclick="sortTable('category')">Category <span class="sort-icon">↕</span></th>
+                        <th onclick="sortTable('status')">Status <span class="sort-icon">↕</span></th>
+                        <th onclick="sortTable('match_score')">Score <span class="sort-icon">↕</span></th>
+                    </tr>
+                </thead>
+                <tbody id="recon-table-body">
+                    <tr><td colspan="7" class="loading"><span class="spinner"></span>Loading...</td></tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="table-footer">
+            <span id="filter-result-count">—</span>
+            <span>Filters apply across all records</span>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    let categoryChart = null;
+    let cashflowChart = null;
+    let allRecords = [];
+    let sortKey = 'date';
+    let sortDir = -1;
+
+    function formatINR(amount) {
+        return '₹' + parseFloat(amount).toLocaleString('en-IN', {
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0
+        });
+    }
+
+    async function loadSummary() {
+        try {
+            const res = await fetch('/api/summary/');
+            const data = await res.json();
+
+            document.getElementById('total-credits').textContent = formatINR(data.total_credits);
+            document.getElementById('total-debits').textContent = formatINR(data.total_debits);
+            document.getElementById('net-cashflow').textContent = formatINR(data.net_cashflow);
+            document.getElementById('unmatched-amount').textContent = formatINR(
+                data.unmatched_bank_amount + data.unmatched_ledger_amount
+            );
+
+            const s = data.reconciliation_summary;
+            document.getElementById('recon-total').textContent = s.total_bank_transactions;
+            document.getElementById('recon-matched').textContent = s.matched;
+            document.getElementById('recon-unmatched-bank').textContent = s.unmatched_bank;
+            document.getElementById('recon-unmatched-ledger').textContent = s.unmatched_ledger;
+
+            const pct = s.total_bank_transactions > 0
+                ? Math.round((s.matched / s.total_bank_transactions) * 100)
+                : 0;
+            document.getElementById('recon-progress').style.width = pct + '%';
+            document.getElementById('recon-percent').textContent = pct + '% reconciled';
+            document.getElementById('last-refresh').textContent =
+                'Updated ' + new Date().toLocaleTimeString('en-IN');
+        } catch(e) { console.error(e); }
+    }
+
+    async function loadCategoryChart() {
+        try {
+            const res = await fetch('/api/category-breakdown/');
+            const data = await res.json();
+            const items = data.bank_expenses_by_category;
+            const labels = items.map(i => i.category);
+            const values = items.map(i => i.total);
+
+            const colors = ['#4f46e5','#059669','#dc2626','#d97706','#7c3aed',
+                            '#0891b2','#be185d','#65a30d','#ea580c','#0284c7'];
+
+            if (categoryChart) categoryChart.destroy();
+            categoryChart = new Chart(document.getElementById('categoryChart'), {
+                type: 'doughnut',
+                data: {
+                    labels,
+                    datasets: [{
+                        data: values,
+                        backgroundColor: colors.slice(0, labels.length),
+                        borderWidth: 2,
+                        borderColor: '#fff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'right', labels: { font: { size: 11 }, padding: 12 } }
+                    }
+                }
+            });
+        } catch(e) { console.error(e); }
+    }
+
+    async function loadReconciliationData() {
+        try {
+            const res = await fetch('/api/reconciliation/');
+            const data = await res.json();
+            allRecords = data.results;
+
+            // Populate category filter dropdown
+            const categories = [...new Set(
+                allRecords
+                    .map(r => r.bank_transaction?.category || r.ledger_entry?.category)
+                    .filter(Boolean)
+            )].sort();
+            const catSelect = document.getElementById('filter-category');
+            catSelect.innerHTML = '<option value="">All categories</option>';
+            categories.forEach(c => {
+                const opt = document.createElement('option');
+                opt.value = c;
+                opt.textContent = c;
+                catSelect.appendChild(opt);
+            });
+
+            // Build cashflow chart from all records
+            buildCashflowChart(allRecords);
+
+            // Show most recent 20 by default
+            renderTable(allRecords.slice(0, 20), false);
+
+        } catch(e) { console.error(e); }
+    }
+
+    function buildCashflowChart(records) {
+        const dailyCredits = {};
+        const dailyDebits = {};
+
+        records.forEach(r => {
+            if (!r.bank_transaction) return;
+            const date = r.bank_transaction.date;
+            const amount = r.bank_transaction.amount;
+            const type = r.bank_transaction.type;
+            if (type === 'credit') dailyCredits[date] = (dailyCredits[date] || 0) + amount;
+            else dailyDebits[date] = (dailyDebits[date] || 0) + amount;
+        });
+
+        const allDates = [...new Set([
+            ...Object.keys(dailyCredits),
+            ...Object.keys(dailyDebits)
+        ])].sort();
+
+        if (cashflowChart) cashflowChart.destroy();
+        cashflowChart = new Chart(document.getElementById('cashflowChart'), {
+            type: 'bar',
+            data: {
+                labels: allDates,
+                datasets: [
+                    {
+                        label: 'Credits',
+                        data: allDates.map(d => dailyCredits[d] || 0),
+                        backgroundColor: 'rgba(5, 150, 105, 0.7)',
+                        borderColor: '#059669',
+                        borderWidth: 1,
+                        borderRadius: 2,
+                    },
+                    {
+                        label: 'Debits',
+                        data: allDates.map(d => dailyDebits[d] || 0),
+                        backgroundColor: 'rgba(220, 38, 38, 0.5)',
+                        borderColor: '#dc2626',
+                        borderWidth: 1,
+                        borderRadius: 2,
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { position: 'top', labels: { font: { size: 11 } } } },
+                scales: {
+                    x: { grid: { display: false }, ticks: { font: { size: 9 }, maxTicksLimit: 12 } },
+                    y: {
+                        grid: { color: '#f3f4f6' },
+                        ticks: {
+                            font: { size: 10 },
+                            callback: v => '₹' + (v/1000).toFixed(0) + 'K'
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    function applyFilters() {
+        const dateFrom = document.getElementById('filter-date-from').value;
+        const dateTo = document.getElementById('filter-date-to').value;
+        const narration = document.getElementById('filter-narration').value.toLowerCase();
+        const description = document.getElementById('filter-description').value.toLowerCase();
+        const category = document.getElementById('filter-category').value;
+        const status = document.getElementById('filter-status').value;
+        const amountMin = parseFloat(document.getElementById('filter-amount-min').value) || 0;
+        const amountMax = parseFloat(document.getElementById('filter-amount-max').value) || Infinity;
+
+        const isFiltering = dateFrom || dateTo || narration || description
+                         || category || status
+                         || document.getElementById('filter-amount-min').value
+                         || document.getElementById('filter-amount-max').value;
+
+        let filtered = allRecords.filter(r => {
+            const date = r.bank_transaction?.date || r.ledger_entry?.date || '';
+            const nar = (r.bank_transaction?.narration || '').toLowerCase();
+            const desc = (r.ledger_entry?.description || '').toLowerCase();
+            const cat = r.bank_transaction?.category || r.ledger_entry?.category || '';
+            const amount = r.bank_transaction?.amount || r.ledger_entry?.amount || 0;
+
+            if (dateFrom && date < dateFrom) return false;
+            if (dateTo && date > dateTo) return false;
+            if (narration && !nar.includes(narration)) return false;
+            if (description && !desc.includes(description)) return false;
+            if (category && cat !== category) return false;
+            if (status && r.status !== status) return false;
+            if (amount < amountMin || amount > amountMax) return false;
+            return true;
+        });
+
+        // Sort
+        filtered = sortRecords(filtered);
+
+        // If no filters active show latest 20, else show all filtered
+        const display = isFiltering ? filtered : filtered.slice(0, 20);
+        renderTable(display, isFiltering, filtered.length);
+    }
+
+    function sortRecords(records) {
+        return [...records].sort((a, b) => {
+            let aVal, bVal;
+            if (sortKey === 'date') {
+                aVal = a.bank_transaction?.date || a.ledger_entry?.date || '';
+                bVal = b.bank_transaction?.date || b.ledger_entry?.date || '';
+            } else if (sortKey === 'narration') {
+                aVal = a.bank_transaction?.narration || '';
+                bVal = b.bank_transaction?.narration || '';
+            } else if (sortKey === 'description') {
+                aVal = a.ledger_entry?.description || '';
+                bVal = b.ledger_entry?.description || '';
+            } else if (sortKey === 'amount') {
+                aVal = a.bank_transaction?.amount || a.ledger_entry?.amount || 0;
+                bVal = b.bank_transaction?.amount || b.ledger_entry?.amount || 0;
+            } else if (sortKey === 'category') {
+                aVal = a.bank_transaction?.category || a.ledger_entry?.category || '';
+                bVal = b.bank_transaction?.category || b.ledger_entry?.category || '';
+            } else if (sortKey === 'status') {
+                aVal = a.status || '';
+                bVal = b.status || '';
+            } else if (sortKey === 'match_score') {
+                aVal = a.match_score || 0;
+                bVal = b.match_score || 0;
+            }
+            if (aVal < bVal) return sortDir;
+            if (aVal > bVal) return -sortDir;
+            return 0;
+        });
+    }
+
+    function sortTable(key) {
+        if (sortKey === key) sortDir *= -1;
+        else { sortKey = key; sortDir = -1; }
+
+        document.querySelectorAll('th').forEach(th => th.classList.remove('sorted'));
+        event.currentTarget.classList.add('sorted');
+        event.currentTarget.querySelector('.sort-icon').textContent = sortDir === -1 ? '↓' : '↑';
+
+        applyFilters();
+    }
+
+    function clearFilters() {
+        document.getElementById('filter-date-from').value = '';
+        document.getElementById('filter-date-to').value = '';
+        document.getElementById('filter-narration').value = '';
+        document.getElementById('filter-description').value = '';
+        document.getElementById('filter-category').value = '';
+        document.getElementById('filter-status').value = '';
+        document.getElementById('filter-amount-min').value = '';
+        document.getElementById('filter-amount-max').value = '';
+        applyFilters();
+    }
+
+    function renderTable(records, isFiltering, totalFiltered) {
+        const tbody = document.getElementById('recon-table-body');
+        const countEl = document.getElementById('filter-result-count');
+        const subtitleEl = document.getElementById('table-count');
+
+        if (records.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="7" class="empty">No records match your filters</td></tr>';
+            countEl.textContent = '0 records';
+            return;
+        }
+
+        if (isFiltering) {
+            subtitleEl.textContent = `Showing ${records.length} of ${totalFiltered} filtered records`;
+            countEl.textContent = `${records.length} records shown`;
+        } else {
+            subtitleEl.textContent = `Showing most recent 20 records — use filters to search all ${allRecords.length} records`;
+            countEl.textContent = `${records.length} of ${allRecords.length} total records`;
+        }
+
+        tbody.innerHTML = records.map(r => {
+            const date = r.bank_transaction?.date || r.ledger_entry?.date || '—';
+            const narration = r.bank_transaction?.narration || '—';
+            const description = r.ledger_entry?.description || '—';
+            const amount = r.bank_transaction?.amount || r.ledger_entry?.amount || 0;
+            const category = r.bank_transaction?.category || r.ledger_entry?.category || '—';
+            const score = r.match_score > 0 ? r.match_score : null;
+
+            return `<tr>
+                <td>${date}</td>
+                <td>${narration}</td>
+                <td>${description}</td>
+                <td>${formatINR(amount)}</td>
+                <td>${category}</td>
+                <td><span class="badge ${r.status}">${r.status.replace(/_/g, ' ')}</span></td>
+                <td>
+                    ${score ? `<div class="score-bar">
+                        <div class="score-fill" style="width:${score}px; max-width:60px"></div>
+                        <span class="score-text">${score}%</span>
+                    </div>` : '—'}
+                </td>
+            </tr>`;
+        }).join('');
+    }
+
+    async function loadAll() {
+        await Promise.all([
+            loadSummary(),
+            loadCategoryChart(),
+            loadReconciliationData(),
+        ]);
+    }
+
+    loadAll();
+</script>
+</body>
+</html>
