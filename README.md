@@ -29,8 +29,8 @@ one from their internal books. They never match perfectly because descriptions
 differ, dates drift by a day or two, and some transactions only appear on one
 side. This system automatically reconciles them.
 
-Upload CSV files → Django ingests and deduplicates rows → Celery background job triggers automatically → Auto-categorization (Swiggy → Food, Uber → Transport) →
-Fuzzy reconciliation (matches bank vs ledger using amount + date + description) → Results stored in PostgreSQL → REST APIs expose insights → Dashboard + Power BI visualize everything
+
+![Alt text](Gemini_Generated_Image_14k8n514k8n514k8.png)
 
 ---
 
@@ -287,12 +287,3 @@ Dates span 2023-2024 with random drift. Amounts include occasional
 sub-₹1 discrepancies to test tolerance matching.
 
 ---
-
-## What I would add with more time
-
-- Celery task locking to prevent concurrent reconciliation on simultaneous uploads
-- `bulk_create()` for ingestion performance on very large files
-- `NormalizedLedger` flat table populated as part of the pipeline
-- ML-based categorization for merchant names not in the rulebook
-- Webhook notifications when reconciliation completes
-- REST API authentication (JWT tokens)
