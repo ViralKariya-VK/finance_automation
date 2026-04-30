@@ -782,10 +782,18 @@
             else dailyDebits[date] = (dailyDebits[date] || 0) + amount;
         });
 
-        const allDates = [...new Set([
+        // Get all dates then filter to last 7 days only
+        const allDatesRaw = [...new Set([
             ...Object.keys(dailyCredits),
             ...Object.keys(dailyDebits)
         ])].sort();
+
+        // Find the most recent date in the data and show 7 days before it
+        const lastDate = new Date(allDatesRaw[allDatesRaw.length - 1]);
+        const cutoff = new Date(lastDate);
+        cutoff.setDate(cutoff.getDate() - 7);
+
+        const allDates = allDatesRaw.filter(d => new Date(d) >= cutoff);
 
         if (cashflowChart) cashflowChart.destroy();
         cashflowChart = new Chart(document.getElementById('cashflowChart'), {
