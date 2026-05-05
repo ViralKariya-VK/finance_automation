@@ -17,12 +17,12 @@ This is built as part of an internship entrance assignment for **Pilgrim Skin Ca
 
 | Resource | URL |
 |---|---|
-| Dashboard | http://13.234.48.100:8000/dashboard/ |
-| Upload Page | http://13.234.48.100:8000/upload/ |
-| API — Summary | http://13.234.48.100:8000/api/summary/ |
-| API — Reconciliation | http://13.234.48.100:8000/api/reconciliation/ |
-| API — Category Breakdown | http://13.234.48.100:8000/api/category-breakdown/ |
-| API — CSV Export | http://13.234.48.100:8000/api/export/ |
+| Dashboard | http://13.232.54.75:8000/dashboard/ |
+| Upload Page | http://13.232.54.75:8000/upload/ |
+| API — Summary | http://13.232.54.75:8000/api/summary/ |
+| API — Reconciliation | http://13.232.54.75:8000/api/reconciliation/ |
+| API — Category Breakdown | http://13.232.54.75:8000/api/category-breakdown/ |
+| API — CSV Export | http://13.232.54.75:8000/api/export/ |
 | Power BI Dashboard | https://app.powerbi.com/view?r=eyJrIjoiMGI1YWI3ZjgtMWZiOC00MGI5LWEwYmItNDA3ZjdkZjRiNGMxIiwidCI6ImQxZjE0MzQ4LWYxYjUtNGEwOS1hYzk5LTdlYmYyMTNjYmM4MSIsImMiOjEwfQ%3D%3D |
 
 ---
